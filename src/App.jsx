@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import jwt_decode from 'jwt-decode';
 
 const colors = { charladyPink: '#FF6F91', charladyPurple: '#D4A5A5', charladyCream: '#FFF5E4' };
 
@@ -31,13 +32,13 @@ const Login = ({ setUser }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    const res = await fetch('https://charlady-worker.your-subdomain.workers.dev/api/login', {
+    const res = await fetch('https://charlady-worker.timothybanjo42.workers.dev/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (data.token) setUser({ email, token: data.token, role: jwt.decode(data.token).role });
+    if (data.token) setUser({ email, token: data.token, role: jwt_decode(data.token).role });
   };
 
   return (
@@ -71,14 +72,14 @@ const WorkerDashboard = ({ user }) => {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/worker/profile', {
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/worker/profile', {
       headers: { Authorization: `Bearer ${user.token}` },
     }).then(res => res.json()).then(setProfile);
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/jobs').then(res => res.json()).then(setJobs);
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/jobs').then(res => res.json()).then(setJobs);
   }, [user.token]);
 
   const apply = (jobId) => {
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/worker/apply', {
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/worker/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
       body: JSON.stringify({ jobId }),
@@ -105,8 +106,8 @@ const EmployerDashboard = ({ user }) => {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/jobs').then(res => res.json()).then(setJobs);
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/employer/applications', {
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/jobs').then(res => res.json()).then(setJobs);
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/employer/applications', {
       headers: { Authorization: `Bearer ${user.token}` },
     }).then(res => res.json()).then(setApplications);
   }, [user.token]);
@@ -116,7 +117,7 @@ const EmployerDashboard = ({ user }) => {
     const description = prompt('Description');
     const salary = prompt('Salary');
     const experience = prompt('Experience Required');
-    await fetch('https://charlady-worker.your-subdomain.workers.dev/api/employer/jobs', {
+    await fetch('https://charlady-worker.timothybanjo42.workers.dev/api/employer/jobs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
       body: JSON.stringify({ title, description, salary, experience }),
@@ -148,13 +149,13 @@ const AdminDashboard = ({ user }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/admin/users', {
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/admin/users', {
       headers: { Authorization: `Bearer ${user.token}` },
     }).then(res => res.json()).then(setUsers);
   }, [user.token]);
 
   const verifyUser = (email) => {
-    fetch('https://charlady-worker.your-subdomain.workers.dev/api/admin/verify', {
+    fetch('https://charlady-worker.timothybanjo42.workers.dev/api/admin/verify', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
       body: JSON.stringify({ email }),
